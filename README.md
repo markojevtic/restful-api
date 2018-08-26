@@ -180,9 +180,8 @@ In case of real-life RESTful api, every resource has to support all verbs(GET,PO
 and implement only methods that was specified in requirements.
 
 ###### Exception handling
-In a real life application I would prefer to create exception handler to provide better exception to http status mapping, 
-and put to payload an error message with more useful information, therefor consumers of our API can better understand  what is wrong.
-But here we use default handler, with a few annotated exceptions.  
+We use exception handler(@ControllerAdvaice) to provide better exception to http status mapping, 
+and put to payload an error message with more useful information, therefor consumers of our API can better understand  what is wrong. 
 
 ###### Using DTO
 We use DTO objects it gives us many benefits: API versioning, protecting some sensitive
@@ -200,3 +199,10 @@ to do not burden myself with that detail. To get data from a database we use spr
 
 In case of the model, we follow KISS principle and we keep number of properties small as it is possible.
 
+### Implementation overview
+
+#### Tender API
+
+In order to provide API to handle create and querying Tenders, we implemented TendersResource a rest controller,
+and mapped it into "/tenders". To make it functional we've introduced TenderService, and TenderResource. To see 
+API documentation please take a look [swagger docs](localhost:8080/swagger-ui.html) tender-resource section. 
