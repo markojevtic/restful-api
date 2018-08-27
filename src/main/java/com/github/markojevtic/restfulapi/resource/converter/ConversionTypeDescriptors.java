@@ -13,6 +13,7 @@ public class ConversionTypeDescriptors {
     public static final TypeDescriptor TENDER_LIST_DESCRIPTOR = TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(Tender.class));
     public static final TypeDescriptor OFFER_DTO_LIST_DESCRIPTOR = TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(OfferDto.class));
     public static final TypeDescriptor OFFER_LIST_DESCRIPTOR = TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(Offer.class));
+
     private ConversionTypeDescriptors() {
     }
 

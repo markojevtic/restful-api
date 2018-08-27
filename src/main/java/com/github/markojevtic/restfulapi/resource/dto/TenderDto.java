@@ -5,8 +5,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.hateoas.ResourceSupport;
 
-import javax.persistence.Column;
-
 @Builder
 @Data
 @EqualsAndHashCode(callSuper = false)
