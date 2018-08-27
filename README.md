@@ -166,9 +166,9 @@ We tried to keep boundary/modules isolated as much as it possible, and every bou
 * repository: layer that cares about storing data
 
 Code/package organisation is done by layers, it means that the base package is `com.github.markojevtic.restfulapi`, and subpackages
-  * resource - resource layer classes ( controllers, converters, dtos )
-  * service - service layer classes ( services )
-  * repository - repository layer classes ( repositories and entities )
+  * com.github.markojevtic.restfulapi.resource - resource layer classes ( controllers, converters, dtos )
+  * com.github.markojevtic.restfulapi.service - service layer classes ( services )
+  * com.github.markojevtic.restfulapi.repository - repository layer classes ( repositories and entities )
 
 There was an option to define package by module/boundary and then by layer, but it approach there would only complicate navigation,
 and did not bring any benefit. Package by module approach is more suitable when we have more modules and more complex module whit multiple services. 
@@ -180,16 +180,15 @@ In case of real-life RESTful api, every resource has to support all verbs(GET,PO
 and implement only methods that was specified in requirements.
 
 ###### Exception handling
-In a real life application I would prefer to create exception handler to provide better exception to http status mapping, 
-and put to payload an error message with more useful information, therefor consumers of our API can better understand  what is wrong.
-But here we use default handler, with a few annotated exceptions.  
+We use exception handler(@ControllerAdvaice) to provide better exception to http status mapping, 
+and put to payload an error message with more useful information, therefor consumers of our API can better understand  what is wrong. 
 
 ###### Using DTO
 We use DTO objects it gives us many benefits: API versioning, protecting some sensitive
 data that we have in entities, etc. To do conversion between entities and DTOs we relay on spring conversion service, 
 and our converters. Every converter do two things:
-    * maps fields from entity to dtos and vice versa . 
-    * add relevant links to dtos
+    * maps fields from entity to DTOs and vice versa . 
+    * add relevant links to DTOs
 
 #### Service
 Service layer is implemented in "Spring way", every service has interface and implementation.
@@ -199,3 +198,11 @@ DB is a detail, and it should not have impact on app architecture, and decision 
 to do not burden myself with that detail. To get data from a database we use spring repository interfaces.
 
 In case of the model, we follow KISS principle and we keep number of properties small as it is possible.
+
+### Implementation overview
+
+#### Tender API
+
+In order to provide API to handle create and querying Tenders, we implemented TendersResource a rest controller,
+and mapped it into "/tenders". To make it functional we've introduced TenderService, and TenderResource. To see 
+API documentation please take a look [swagger docs](localhost:8080/swagger-ui.html) tender-resource section. 
