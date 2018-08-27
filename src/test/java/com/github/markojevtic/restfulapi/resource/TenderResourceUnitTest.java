@@ -86,7 +86,8 @@ public class TenderResourceUnitTest {
         doReturn(singletonList(newTestTender()))
                 .when(tenderService).findAllAndFilterByIssuer(anyString());
         mvc.perform(get(TenderResource.createLinkToQueryByIssuerId(TEST_ISSUER_ID).toString())
-                .accept(MediaType.APPLICATION_JSON_UTF8))
+                .accept(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].tenderId").value(TEST_TENDER_ID))

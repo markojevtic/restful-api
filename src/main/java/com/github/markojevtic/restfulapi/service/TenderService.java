@@ -12,7 +12,7 @@ public interface TenderService {
      * Validates given tender, and store it.
      * @param tender - tender to be created.
      * @return - stored tender.
-     * @throws IllegalArgumentException if tender object is not valide.
+     * @throws IllegalArgumentException if tender object is not valid.
      */
     Tender createNewTender(Tender tender);
 
@@ -22,4 +22,11 @@ public interface TenderService {
      * @return all entities or filtered by filterId if it has issuerId.
      */
     List<Tender> findAllAndFilterByIssuer(String issuerId);
+
+    /**
+     * Methods does check if tender with given id is open for biding.
+     * @param tenderId - id of tender that we ask for bidding.
+     * @return true if tender is biddable otherwise false.
+     */
+    Boolean isTenderBiddable(String tenderId);
 }
