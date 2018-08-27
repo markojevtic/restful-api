@@ -92,7 +92,10 @@ public class TenderResourceUnitTest {
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].tenderId").value(TEST_TENDER_ID))
                 .andExpect(jsonPath("$[0].issuerId").value(TEST_ISSUER_ID))
-                .andExpect(jsonPath("$[0].description").value(TEST_DESCRIPTION));
+                .andExpect(jsonPath("$[0].description").value(TEST_DESCRIPTION))
+                .andExpect(jsonPath("$[0].links", hasSize(1)))
+                .andExpect(jsonPath("$[0].links[0].rel").value("tenderOffers"))
+                .andExpect(jsonPath("$[0].links[0].href").exists());
     }
 
     private TenderDto newTestTenderDto() {

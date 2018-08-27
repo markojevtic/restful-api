@@ -96,7 +96,14 @@ public class OfferResourceUnitTest {
                 .andExpect(jsonPath("$[0].offerId").value(TEST_OFFER_ID))
                 .andExpect(jsonPath("$[0].tenderId").value(TEST_TENDER_ID))
                 .andExpect(jsonPath("$[0].bidderId").value(TEST_BIDDER_ID))
-                .andExpect(jsonPath("$[0].description").value(TEST_DESCRIPTION));
+                .andExpect(jsonPath("$[0].description").value(TEST_DESCRIPTION))
+                .andExpect(jsonPath("$[0].links", hasSize(3)))
+                .andExpect(jsonPath("$[0].links[0].rel").value("tenderOffers"))
+                .andExpect(jsonPath("$[0].links[0].href").exists())
+                .andExpect(jsonPath("$[0].links[1].rel").value("bidderOffers"))
+                .andExpect(jsonPath("$[0].links[1].href").exists())
+                .andExpect(jsonPath("$[0].links[2].rel").value("tenderAndBidderOffers"))
+                .andExpect(jsonPath("$[0].links[2].href").exists());
     }
 
     @Test
