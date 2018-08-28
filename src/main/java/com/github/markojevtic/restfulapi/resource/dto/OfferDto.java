@@ -8,13 +8,14 @@ import org.springframework.hateoas.ResourceSupport;
 @Builder
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class TenderDto extends ResourceSupport {
+public class OfferDto extends ResourceSupport {
 
+    private String offerId;
     private String tenderId;
-    private String issuerId;
+    private String bidderId;
     private String description;
 
-    public static class TenderDtoBuilder extends LombokDtoBuilder<TenderDto> {
+    public static class OfferDtoBuilder extends LombokDtoBuilder<OfferDto> {
         //Will be created by lombok
     }
 }

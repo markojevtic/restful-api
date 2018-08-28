@@ -31,4 +31,9 @@ public class TenderServiceImpl implements TenderService {
             return repository.findByIssuerId(issuerId);
         }
     }
+
+    @Override
+    public Boolean isTenderBiddable(String tenderId) {
+        return repository.findById(tenderId).isPresent();
+    }
 }

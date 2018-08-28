@@ -86,12 +86,16 @@ public class TenderResourceUnitTest {
         doReturn(singletonList(newTestTender()))
                 .when(tenderService).findAllAndFilterByIssuer(anyString());
         mvc.perform(get(TenderResource.createLinkToQueryByIssuerId(TEST_ISSUER_ID).toString())
-                .accept(MediaType.APPLICATION_JSON_UTF8))
+                .accept(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].tenderId").value(TEST_TENDER_ID))
                 .andExpect(jsonPath("$[0].issuerId").value(TEST_ISSUER_ID))
-                .andExpect(jsonPath("$[0].description").value(TEST_DESCRIPTION));
+                .andExpect(jsonPath("$[0].description").value(TEST_DESCRIPTION))
+                .andExpect(jsonPath("$[0].links", hasSize(1)))
+                .andExpect(jsonPath("$[0].links[0].rel").value("tenderOffers"))
+                .andExpect(jsonPath("$[0].links[0].href").exists());
     }
 
     private TenderDto newTestTenderDto() {

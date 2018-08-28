@@ -206,3 +206,11 @@ In case of the model, we follow KISS principle and we keep number of properties 
 In order to provide API to handle create and querying Tenders, we implemented TendersResource a rest controller,
 and mapped it into "/tenders". To make it functional we've introduced TenderService, and TenderResource. To see 
 API documentation please take a look [swagger docs](localhost:8080/swagger-ui.html) tender-resource section. 
+
+#### Offer API
+The offer API handles creating offer for an open tender, and querying offers by tender and bidder.We have implemented
+that in the standard way, rest layer has been implemented in OfferResource, service is defined by interface OfferService 
+and implemented in OfferServiceImpl, the repository is a spring JPA repository defined in OfferRepository. The offer
+module has a dependency on module Tender. We need cause we create offer only if tender is biddable.
+
+ 

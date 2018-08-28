@@ -10,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -74,6 +76,24 @@ public class TenderServiceUnitTest {
                 .isEqualTo(testIssuerId);
 
         verify(tenderRepository, never()).findAll();
+    }
+
+    @Test
+    public void isBiddableReturnsTrueOnlyIfTenderExist() {
+
+        String testIssuerId = "testIssuerId";
+
+        Optional<Tender> existingTender = Optional.of(Tender.builder().tenderId(testIssuerId).build());
+        Optional<Tender> noTender = Optional.empty();
+
+        doReturn(existingTender, noTender)
+                .when(tenderRepository).findById(anyString());
+
+        assertThat(tenderService.isTenderBiddable(testIssuerId))
+                .isTrue();
+
+        assertThat(tenderService.isTenderBiddable(testIssuerId))
+                .isFalse();
     }
 
 }
