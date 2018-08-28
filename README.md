@@ -133,7 +133,7 @@ Then the offer has status accepted
     And the result have status 200        
 ```
 
-_B. an API user cannot accept a declined offer_
+_B. an API user cannot accept a not new offer_
 ```
 Given an existing tender
     with an accepted offer with id 1
@@ -142,10 +142,8 @@ When issuer accept offer with id 2
 Then result has status 400        
 ```
 
-#### Accepting an offer story
-As an API user, I want to accpet one story for a tender. Accepting one offer, immediately decline all other offers 
-for that story.
-
+#### Finalization story
+Documentation improvement, tests, manual testing, etc.
      
 ## Technology stack overview
 
