@@ -2,6 +2,7 @@ package com.github.markojevtic.restfulapi.service;
 
 import com.github.markojevtic.restfulapi.repository.TenderRepository;
 import com.github.markojevtic.restfulapi.repository.entity.Tender;
+import com.github.markojevtic.restfulapi.repository.entity.TenderStatus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -35,8 +36,14 @@ public class TenderServiceUnitTest {
                 .issuerId("testIssuer")
                 .description("Test tender")
                 .build();
-        assertThat(tenderService.createNewTender(testTender))
-                .extracting(Tender::getTenderId).isNotNull();
+
+        Tender createdTender = tenderService.createNewTender(testTender);
+
+        assertThat(createdTender.getTenderId())
+                .isNotEmpty();
+
+        assertThat(createdTender.getStatus())
+                .isEqualTo(TenderStatus.OPEN);
 
         verify(tenderRepository, times(1)).save(any(Tender.class));
     }

@@ -2,6 +2,7 @@ package com.github.markojevtic.restfulapi.service;
 
 import com.github.markojevtic.restfulapi.repository.OfferRepository;
 import com.github.markojevtic.restfulapi.repository.entity.Offer;
+import com.github.markojevtic.restfulapi.repository.entity.OfferStatus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ public class OfferServiceUnitTest {
     public static final boolean IT_IS_BIDDABLE = true;
     public static final boolean IT_IS_NO_BIDDABLE = false;
 
+
     @MockBean
     private TenderService tenderService;
 
@@ -49,10 +51,14 @@ public class OfferServiceUnitTest {
         doAnswer(invocation -> invocation.getArguments()[0])
                 .when(offerRepository).save(any(Offer.class));
 
-        assertThat(offerService.createOffer(validOffer))
-                .isEqualToComparingFieldByField(validOffer)
-                .extracting(Offer::getOfferId)
-                .isNotNull();
+        Offer createdOffer = offerService.createOffer(validOffer);
+
+        assertThat(createdOffer)
+                .isEqualToComparingFieldByField(validOffer);
+        assertThat(createdOffer.getOfferId())
+                .isNotEmpty();
+        assertThat(createdOffer.getStatus())
+                .isEqualTo(OfferStatus.NEW);
     }
 
     @Test

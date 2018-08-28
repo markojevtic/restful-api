@@ -2,6 +2,7 @@ package com.github.markojevtic.restfulapi.service.impl;
 
 import com.github.markojevtic.restfulapi.repository.TenderRepository;
 import com.github.markojevtic.restfulapi.repository.entity.Tender;
+import com.github.markojevtic.restfulapi.repository.entity.TenderStatus;
 import com.github.markojevtic.restfulapi.service.TenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ public class TenderServiceImpl implements TenderService {
     public Tender createNewTender(Tender tender) {
         Assert.hasText(tender.getIssuerId(), "Issuer id must not be empty!");
         tender.setTenderId(UUID.randomUUID().toString());
+        tender.setStatus(TenderStatus.OPEN);
         return repository.save(tender);
     }
 

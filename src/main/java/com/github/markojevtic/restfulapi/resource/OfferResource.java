@@ -36,7 +36,11 @@ public class OfferResource {
         return linkTo(methodOn(OfferResource.class).getAllByTenderId(tenderId));
     }
 
-    public static final ControllerLinkBuilder createLinkToQueryByBiderId(String bidderId) {
+    public static final ControllerLinkBuilder createLinkToAcceptOffer(String offerId) {
+        return linkTo(methodOn(OfferResource.class).acceptOffer(offerId));
+    }
+
+    public static final ControllerLinkBuilder createLinkToQueryByBidderId(String bidderId) {
         return linkTo(methodOn(OfferResource.class).getAllByBidderId(bidderId));
     }
 
@@ -71,5 +75,11 @@ public class OfferResource {
         return ResponseEntity.ok(
                 (List<TenderDto>) conversionService.convert(offerService.findByTenderIdAndBidderId(tenderId, bidderId), OFFER_LIST_DESCRIPTOR, OFFER_DTO_LIST_DESCRIPTOR)
         );
+    }
+
+    @PostMapping(path = "/{offerId}/accepted")
+    public ResponseEntity<Void> acceptOffer(@PathVariable String offerId) {
+        offerService.acceptOffer(offerId);
+        return ResponseEntity.noContent().build();
     }
 }

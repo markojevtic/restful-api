@@ -2,6 +2,7 @@ package com.github.markojevtic.restfulapi.service.impl;
 
 import com.github.markojevtic.restfulapi.repository.OfferRepository;
 import com.github.markojevtic.restfulapi.repository.entity.Offer;
+import com.github.markojevtic.restfulapi.repository.entity.OfferStatus;
 import com.github.markojevtic.restfulapi.service.OfferService;
 import com.github.markojevtic.restfulapi.service.TenderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ public class OfferServiceImpl implements OfferService {
         Assert.hasText(offer.getBidderId(), "Offer must have a valid bidder id!");
 
         offer.setOfferId(UUID.randomUUID().toString());
+        offer.setStatus(OfferStatus.NEW);
         return repository.save(offer);
     }
 
@@ -42,5 +44,10 @@ public class OfferServiceImpl implements OfferService {
     @Override
     public List<Offer> findByTenderIdAndBidderId(String tenderId, String bidderId) {
         return repository.findByTenderIdAndBidderId(tenderId, bidderId);
+    }
+
+    @Override
+    public void acceptOffer(String offerId) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

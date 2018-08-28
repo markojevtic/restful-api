@@ -16,6 +16,7 @@ public class OfferToOfferDtoConverter implements Converter<Offer, OfferDto> {
                 .tenderId(source.getTenderId())
                 .bidderId(source.getBidderId())
                 .description(source.getDescription())
+                .status(source.getStatus())
                 .buildWithLinks(
                         OfferResource.createLinkToQueryByTenderId(source.getTenderId()).withRel("tenderOffers"),
                         OfferResource.createLinkToQueryByTenderId(source.getTenderId()).withRel("bidderOffers"),

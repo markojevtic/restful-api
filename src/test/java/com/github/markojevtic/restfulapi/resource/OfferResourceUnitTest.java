@@ -8,6 +8,7 @@ import com.github.markojevtic.restfulapi.service.OfferService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -18,6 +19,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -111,7 +113,7 @@ public class OfferResourceUnitTest {
         doReturn(singletonList(newTestOffer()))
                 .when(offerService).findByBidderId(anyString());
 
-        mvc.perform(get(OfferResource.createLinkToQueryByBiderId(TEST_BIDDER_ID).toString())
+        mvc.perform(get(OfferResource.createLinkToQueryByBidderId(TEST_BIDDER_ID).toString())
                 .accept(MediaType.APPLICATION_JSON_UTF8)
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())
@@ -136,6 +138,42 @@ public class OfferResourceUnitTest {
                 .andExpect(jsonPath("$[0].tenderId").value(TEST_TENDER_ID))
                 .andExpect(jsonPath("$[0].bidderId").value(TEST_BIDDER_ID))
                 .andExpect(jsonPath("$[0].description").value(TEST_DESCRIPTION));
+    }
+
+    @Test
+    public void postAcceptOfferReturnsNoContentIfOfferIsAcceptable() throws Exception {
+        doNothing()
+                .when(offerService).acceptOffer(anyString());
+
+        mvc.perform(post(OfferResource.createLinkToAcceptOffer(TEST_OFFER_ID).toString())
+                .accept(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isNoContent());
+
+        ArgumentCaptor<String> offerIdCaptor = ArgumentCaptor.forClass(String.class);
+        verify(offerService, times(1)).acceptOffer(offerIdCaptor.capture());
+
+        assertThat(offerIdCaptor.getValue())
+                .isEqualTo(TEST_OFFER_ID);
+    }
+
+    @Test
+    public void postAcceptOfferReturnsBadRequestWhenGivenIdRefersToNonAcceptableOffer() throws Exception {
+        String errorMessage = "Offer is not acceptable";
+        doThrow(new IllegalArgumentException(errorMessage))
+                .when(offerService).acceptOffer(anyString());
+
+        mvc.perform(post(OfferResource.createLinkToAcceptOffer(TEST_OFFER_ID).toString())
+                .accept(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(errorMessage));
+
+        ArgumentCaptor<String> offerIdCaptor = ArgumentCaptor.forClass(String.class);
+        verify(offerService, times(1)).acceptOffer(offerIdCaptor.capture());
+
+        assertThat(offerIdCaptor.getValue())
+                .isEqualTo(TEST_OFFER_ID);
     }
 
     private OfferDto newTestOfferDto() {
