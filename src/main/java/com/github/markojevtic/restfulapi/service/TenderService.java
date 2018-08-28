@@ -10,6 +10,7 @@ import java.util.List;
 public interface TenderService {
     /**
      * Validates given tender, and store it.
+     *
      * @param tender - tender to be created.
      * @return - stored tender.
      * @throws IllegalArgumentException if tender object is not valid.
@@ -18,6 +19,7 @@ public interface TenderService {
 
     /**
      * Load all entities and filter it by issuerId.
+     *
      * @param issuerId - issuerId or empty/null
      * @return all entities or filtered by filterId if it has issuerId.
      */
@@ -25,8 +27,17 @@ public interface TenderService {
 
     /**
      * Methods does check if tender with given id is open for biding.
+     *
      * @param tenderId - id of tender that we ask for bidding.
      * @return true if tender is biddable otherwise false.
      */
     Boolean isTenderBiddable(String tenderId);
+
+    /**
+     * Method change status of tender with given id to Closed, it should make the tender non biddable.
+     *
+     * @param tenderId - target tender id.
+     * @throws IllegalArgumentException if the tender is not open or it doesn't exist.
+     */
+    void closeTender(String tenderId);
 }

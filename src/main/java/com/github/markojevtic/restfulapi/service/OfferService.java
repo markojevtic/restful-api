@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface OfferService {
     /**
-     * Validates given offer and if it's valide store it into reposiotry.
+     * Validates given offer and if it's valid store it into repository.
      *
      * @param offer offer to be validated.
      * @return stored offer with initialized fields.
@@ -21,4 +21,13 @@ public interface OfferService {
     List<Offer> findByBidderId(String bidderId);
 
     List<Offer> findByTenderIdAndBidderId(String tenderId, String bidderId);
+
+    /**
+     * Accept offer for the offerId, and decline all other offer for the same tender. In case that offer
+     * cannot be accepted throws IllegalArgumentException.
+     *
+     * @param offerId the id of offer that has to be accepted.
+     * @throws IllegalArgumentException in case that given id doesn't refer to a offer that can be accepted.
+     */
+    void acceptOffer(String offerId);
 }

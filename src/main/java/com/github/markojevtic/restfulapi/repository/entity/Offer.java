@@ -27,4 +27,7 @@ public class Offer {
 
     @Column(length = 500)
     private String description;
+
+    @Column(length = 50)
+    private OfferStatus status;
 }

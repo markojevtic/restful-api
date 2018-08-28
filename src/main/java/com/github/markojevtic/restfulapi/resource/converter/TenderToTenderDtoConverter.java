@@ -15,6 +15,7 @@ public class TenderToTenderDtoConverter implements Converter<Tender, TenderDto> 
                 .tenderId(source.getTenderId())
                 .issuerId(source.getIssuerId())
                 .description(source.getDescription())
+                .status(source.getStatus())
                 .buildWithLinks(
                         OfferResource.createLinkToQueryByTenderId(source.getTenderId()).withRel("tenderOffers")
                 );

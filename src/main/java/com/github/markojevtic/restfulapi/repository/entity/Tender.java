@@ -24,4 +24,7 @@ public class Tender {
 
     @Column(length = 500)
     private String description;
+
+    @Column(length = 50)
+    private TenderStatus status;
 }
