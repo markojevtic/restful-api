@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -36,6 +38,17 @@ public class TenderServiceImpl implements TenderService {
 
     @Override
     public Boolean isTenderBiddable(String tenderId) {
-        return repository.findById(tenderId).isPresent();
+        Optional<Tender> tender = repository.findById(tenderId);
+        return tender.isPresent() && tender.get().getStatus() == TenderStatus.OPEN;
+    }
+
+    @Override
+    @Transactional
+    public void closeTender(String tenderId) {
+        Tender tender = repository.findById(tenderId)
+                .orElseThrow(() -> new IllegalArgumentException("Is not possible to close a non existing Tender."));
+        Assert.isTrue(tender.getStatus() == TenderStatus.OPEN, "It's only possible to close an open Tender.");
+        tender.setStatus(TenderStatus.CLOSE);
+        repository.save(tender);
     }
 }

@@ -213,4 +213,8 @@ that in the standard way, rest layer has been implemented in OfferResource, serv
 and implemented in OfferServiceImpl, the repository is a spring JPA repository defined in OfferRepository. The offer
 module has a dependency on module Tender. We need cause we create offer only if tender is biddable.
 
- 
+##### Accept an Offer API 
+To provide API for accepting an offer by side of issuer, I exposed a sub-resource of offer "/offers/{offerId}/accepted" with 
+verb POST. It is defined as a method in class OfferResource. The rest controller calls the service layer mehtod,
+which load target offer, validate does offer have status NEW, and then accept them, decline all other offers 
+for the tender, and then call TenderService in order to close this tender for new bidding.
