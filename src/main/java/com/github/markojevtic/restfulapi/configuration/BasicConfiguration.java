@@ -1,6 +1,5 @@
 package com.github.markojevtic.restfulapi.configuration;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -23,7 +22,7 @@ public class BasicConfiguration {
     @Primary
     public ConversionService dtoConverters(Set<Converter<?, ?>> converters ) {
         final DefaultConversionService defaultConversionService = new DefaultConversionService();
-        converters.forEach( c -> defaultConversionService.addConverter( c ) );
+        converters.forEach(defaultConversionService::addConverter);
         return defaultConversionService;
     }
 

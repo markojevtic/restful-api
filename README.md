@@ -1,4 +1,12 @@
 # Example of design restful api
+This is an example how to create a rest-ful api with spring-boot. 
+To make example more realistic we implemented an construction tender case.
+
+## How to build and start application
+
+* Build: `mvn install`
+* Run: `java -jar target/restfulapi-0.0.1-SNAPSHOT.jar`
+* Open project in an IDE need a lombok plugin.
 
 ## The case
 
@@ -173,10 +181,9 @@ and did not bring any benefit. Package by module approach is more suitable when 
  
 #### Rest
 
-To define RESTful API we use spring-hateos, it allows as to defined a navigable API. Documenting API is done with swagger.
+To define RESTful API we use spring-hateos, it allows as to defined a navigable API. Documenting API is done with [swagger](http://localhost:8080/swagger-ui.html).
 In case of real-life RESTful api, every resource has to support all verbs(GET,POST,PUT,DELETE), but here we follow YAGNI method,
-and implement only methods that was specified in requirements.
-
+and implement only methods that was specified in requirements. 
 ###### Exception handling
 We use exception handler(@ControllerAdvaice) to provide better exception to http status mapping, 
 and put to payload an error message with more useful information, therefor consumers of our API can better understand  what is wrong. 
@@ -192,18 +199,17 @@ and our converters. Every converter do two things:
 Service layer is implemented in "Spring way", every service has interface and implementation.
 
 #### Repository level
-DB is a detail, and it should not have impact on app architecture, and decision which database to use it should be postponed as far as it possible. Here I've decided
-to do not burden myself with that detail. To get data from a database we use spring repository interfaces.
+DB is a detail, and it should not have an impact on app architecture, and decision which database to use it should be postponed as far as it possible. 
+Here we use H2 database, and for accessing database we use spring data JPA repository interface.
 
 In case of the model, we follow KISS principle and we keep number of properties small as it is possible.
 
-### Implementation overview
+### The case implementation overview
 
 #### Tender API
 
 In order to provide API to handle create and querying Tenders, we implemented TendersResource a rest controller,
-and mapped it into "/tenders". To make it functional we've introduced TenderService, and TenderResource. To see 
-API documentation please take a look [swagger docs](localhost:8080/swagger-ui.html) tender-resource section. 
+and mapped it into "/tenders". To make it functional we've introduced TenderService, and TenderRepository.  
 
 #### Offer API
 The offer API handles creating offer for an open tender, and querying offers by tender and bidder.We have implemented
@@ -213,6 +219,6 @@ module has a dependency on module Tender. We need cause we create offer only if 
 
 ##### Accept an Offer API 
 To provide API for accepting an offer by side of issuer, I exposed a sub-resource of offer "/offers/{offerId}/accepted" with 
-verb POST. It is defined as a method in class OfferResource. The rest controller calls the service layer mehtod,
+verb POST. It is defined as a method in class OfferResource. The rest controller calls the service layer method,
 which load target offer, validate does offer have status NEW, and then accept them, decline all other offers 
 for the tender, and then call TenderService in order to close this tender for new bidding.

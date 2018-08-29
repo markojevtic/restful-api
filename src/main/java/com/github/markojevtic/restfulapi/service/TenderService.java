@@ -21,7 +21,7 @@ public interface TenderService {
      * Load all entities and filter it by issuerId.
      *
      * @param issuerId - issuerId or empty/null
-     * @return all entities or filtered by filterId if it has issuerId.
+     * @return all entities or filtered by issuerId if it not empty.
      */
     List<Tender> findAllAndFilterByIssuer(String issuerId);
 

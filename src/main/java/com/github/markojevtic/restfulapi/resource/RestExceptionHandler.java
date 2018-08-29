@@ -4,6 +4,7 @@ import com.github.markojevtic.restfulapi.resource.dto.ErrorDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -14,8 +15,8 @@ public class RestExceptionHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RestExceptionHandler.class);
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorDto> validationException(final IllegalArgumentException exception) throws Exception {
+    @ExceptionHandler({IllegalArgumentException.class, MethodArgumentNotValidException.class})
+    public ResponseEntity<ErrorDto> validationException(final Exception exception) {
 
         logger.error("Unexpected error occurred. Error message: {}", exception.getMessage(), exception);
 
