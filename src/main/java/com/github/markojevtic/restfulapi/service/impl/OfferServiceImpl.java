@@ -8,6 +8,7 @@ import com.github.markojevtic.restfulapi.service.TenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -33,19 +34,23 @@ public class OfferServiceImpl implements OfferService {
         return repository.save(offer);
     }
 
-    @Override
-    public List<Offer> findByTenderId(String tenderId) {
-        return repository.findByTenderId(tenderId);
-    }
 
     @Override
-    public List<Offer> findByBidderId(String bidderId) {
-        return repository.findByBidderId(bidderId);
+    public List<Offer> findAllAndFilterByTenderIdAndBidderId(String tenderId, String bidderId) {
+        if( shouldFilterBy(tenderId) && shouldFilterBy(bidderId)) {
+            return repository.findByTenderIdAndBidderId(tenderId, bidderId);
+        } else if(shouldFilterBy(tenderId)) {
+            return repository.findByTenderId(tenderId);
+        } else if(shouldFilterBy(bidderId)){
+            return repository.findByBidderId(bidderId);
+        } else {
+            return repository.findAll();
+        }
+
     }
 
-    @Override
-    public List<Offer> findByTenderIdAndBidderId(String tenderId, String bidderId) {
-        return repository.findByTenderIdAndBidderId(tenderId, bidderId);
+    private boolean shouldFilterBy(String param) {
+        return StringUtils.hasText(param);
     }
 
     @Override

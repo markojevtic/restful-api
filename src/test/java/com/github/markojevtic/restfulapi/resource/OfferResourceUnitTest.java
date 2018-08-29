@@ -22,9 +22,11 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,11 +34,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 public class OfferResourceUnitTest {
 
-    public static final String TEST_OFFER_ID = "test-offer-id";
-    public static final String TEST_TENDER_ID = "test-tender-id";
-    public static final String TEST_BIDDER_ID = "test-issuer-id";
-    public static final String TEST_DESCRIPTION = "Test description";
-    public static final String OVERSIZED_ID = "12356768901235676890123567689012356768901235676890";
+    private static final String TEST_OFFER_ID = "test-offer-id";
+    private static final String TEST_TENDER_ID = "test-tender-id";
+    private static final String TEST_BIDDER_ID = "test-issuer-id";
+    private static final String TEST_DESCRIPTION = "Test description";
+    private static final String OVERSIZED_ID = "12356768901235676890123567689012356768901235676890";
     private final ObjectMapper mapper = new ObjectMapper();
 
     @MockBean
@@ -107,11 +109,12 @@ public class OfferResourceUnitTest {
     @Test
     public void getByTenderIdReturnsResultWithStatusOk() throws Exception {
         doReturn(singletonList(newTestOffer()))
-                .when(offerService).findByTenderId(anyString());
+                .when(offerService).findAllAndFilterByTenderIdAndBidderId(anyString(), isNull());
 
-        mvc.perform(get(OfferResource.createLinkToQueryByTenderId(TEST_TENDER_ID).toString())
+        mvc.perform(get(OfferResource.createLinkToQueryByTenderId(TEST_TENDER_ID).toUri())
                 .accept(MediaType.APPLICATION_JSON_UTF8)
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].offerId").value(TEST_OFFER_ID))
@@ -130,9 +133,9 @@ public class OfferResourceUnitTest {
     @Test
     public void getByBidderIdReturnsResultWithStatusOk() throws Exception {
         doReturn(singletonList(newTestOffer()))
-                .when(offerService).findByBidderId(anyString());
+                .when(offerService).findAllAndFilterByTenderIdAndBidderId(isNull(), anyString());
 
-        mvc.perform(get(OfferResource.createLinkToQueryByBidderId(TEST_BIDDER_ID).toString())
+        mvc.perform(get(OfferResource.createLinkToQueryByBidderId(TEST_BIDDER_ID).toUri())
                 .accept(MediaType.APPLICATION_JSON_UTF8)
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())
@@ -146,9 +149,9 @@ public class OfferResourceUnitTest {
     @Test
     public void getByTenderIdAndBidderIdReturnsResultWithStatusOk() throws Exception {
         doReturn(singletonList(newTestOffer()))
-                .when(offerService).findByTenderIdAndBidderId(anyString(), anyString());
+                .when(offerService).findAllAndFilterByTenderIdAndBidderId(anyString(), anyString());
 
-        mvc.perform(get(OfferResource.createLinkToQueryByTenderIdAndBidderId(TEST_TENDER_ID, TEST_BIDDER_ID).toString())
+        mvc.perform(get(OfferResource.createLinkToQueryByTenderIdAndBidderId(TEST_TENDER_ID, TEST_BIDDER_ID).toUri())
                 .accept(MediaType.APPLICATION_JSON_UTF8)
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())

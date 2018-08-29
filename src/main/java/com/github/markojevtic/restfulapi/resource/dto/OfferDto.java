@@ -25,11 +25,11 @@ public class OfferDto extends ResourceSupport {
     private String tenderId;
 
     @Size(max = 36)
-    @ApiModelProperty( notes = "The id of bidder.(Max length 36)", example = "max.mustermann")
+    @ApiModelProperty( notes = "The id of bidder.(Max length 36)", example = "max.bidder")
     private String bidderId;
 
     @Size(max = 500)
-    @ApiModelProperty( notes = "Description of the offer.(Max length 500)", example = "Build the house.")
+    @ApiModelProperty( notes = "Description of the offer.(Max length 500)", example = "I will do it.")
     private String description;
 
     @ApiModelProperty( notes = "Status of the offer.", readOnly = true)

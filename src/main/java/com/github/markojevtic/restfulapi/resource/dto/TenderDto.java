@@ -23,11 +23,11 @@ public class TenderDto extends ResourceSupport {
     private String tenderId;
 
     @Size(max = 36)
-    @ApiModelProperty( notes = "The id of tender's issuer.(Max length 36)", example = "max.mustermann")
+    @ApiModelProperty( notes = "The id of tender's issuer.(Max length 36)", example = "max.issuer")
     private String issuerId;
 
     @Size(max = 500)
-    @ApiModelProperty( notes = "Description of the tender.(Max length 500)", example = "I will do it.")
+    @ApiModelProperty( notes = "Description of the tender.(Max length 500)", example = "Build the house.")
     private String description;
 
     @ApiModelProperty( notes = "Status of the tender.", readOnly = true)

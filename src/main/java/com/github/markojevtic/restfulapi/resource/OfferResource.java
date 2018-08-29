@@ -38,16 +38,16 @@ public class OfferResource {
         return linkTo(OfferResource.class);
     }
 
-    public static ControllerLinkBuilder createLinkToQueryByTenderId(String tenderId) {
-        return linkTo(methodOn(OfferResource.class).getAllByTenderId(tenderId));
-    }
-
     public static ControllerLinkBuilder createLinkToAcceptOffer(String offerId) {
         return linkTo(methodOn(OfferResource.class).acceptOffer(offerId));
     }
 
+    public static ControllerLinkBuilder createLinkToQueryByTenderId(String tenderId) {
+        return linkTo(methodOn(OfferResource.class).getAllByTenderIdAndBidderId(tenderId, null));
+    }
+
     public static ControllerLinkBuilder createLinkToQueryByBidderId(String bidderId) {
-        return linkTo(methodOn(OfferResource.class).getAllByBidderId(bidderId));
+        return linkTo(methodOn(OfferResource.class).getAllByTenderIdAndBidderId(null, bidderId));
     }
 
     public static ControllerLinkBuilder createLinkToQueryByTenderIdAndBidderId(String tenderId, String bidderId) {
@@ -68,39 +68,15 @@ public class OfferResource {
         );
     }
 
-    @ApiOperation(value = "Querying offers by tender-id.", nickname = "getAllByTenderId")
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "Successful, result is a list of offers for given tender-id."),
-            @ApiResponse(code = 500, message = "An unexpected server error")
-    })
-    @GetMapping(params = "tenderId")
-    public ResponseEntity<List<TenderDto>> getAllByTenderId(@RequestParam String tenderId) {
-        return ResponseEntity.ok(
-                (List<TenderDto>) conversionService.convert(offerService.findByTenderId(tenderId), OFFER_LIST_DESCRIPTOR, OFFER_DTO_LIST_DESCRIPTOR)
-        );
-    }
-
-    @ApiOperation(value = "Querying offers by bidder-id.", nickname = "getAllByBidderId")
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "Successful, result is a list of offers for given bidder-id."),
-            @ApiResponse(code = 500, message = "An unexpected server error")
-    })
-    @GetMapping(params = "bidderId")
-    public ResponseEntity<List<TenderDto>> getAllByBidderId(@RequestParam String bidderId) {
-        return ResponseEntity.ok(
-                (List<TenderDto>) conversionService.convert(offerService.findByBidderId(bidderId), OFFER_LIST_DESCRIPTOR, OFFER_DTO_LIST_DESCRIPTOR)
-        );
-    }
-
-    @ApiOperation(value = "Querying offers by tender-id and bidder-id.", nickname = "getAllByTenderIdAndBidderId")
+    @ApiOperation(value = "Querying offers and filter them by tender-id and bidder-id.")
     @ApiResponses({
             @ApiResponse(code = 200, message = "Successful, result is a list of offers for given tender-id and bidder-id."),
             @ApiResponse(code = 500, message = "An unexpected server error")
     })
-    @GetMapping(params = {"tenderId", "bidderId"})
-    public ResponseEntity<List<TenderDto>> getAllByTenderIdAndBidderId(@RequestParam String tenderId, @RequestParam String bidderId) {
+    @GetMapping
+    public ResponseEntity<List<TenderDto>> getAllByTenderIdAndBidderId(@RequestParam(required = false) String tenderId, @RequestParam(required = false) String bidderId) {
         return ResponseEntity.ok(
-                (List<TenderDto>) conversionService.convert(offerService.findByTenderIdAndBidderId(tenderId, bidderId), OFFER_LIST_DESCRIPTOR, OFFER_DTO_LIST_DESCRIPTOR)
+                (List<TenderDto>) conversionService.convert( offerService.findAllAndFilterByTenderIdAndBidderId(tenderId, bidderId), OFFER_LIST_DESCRIPTOR, OFFER_DTO_LIST_DESCRIPTOR)
         );
     }
 

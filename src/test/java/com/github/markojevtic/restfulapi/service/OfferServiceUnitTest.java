@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 import static java.util.Collections.singletonList;
@@ -23,12 +22,12 @@ import static org.mockito.Mockito.*;
 @RunWith(SpringRunner.class)
 public class OfferServiceUnitTest {
 
-    public static final String TEST_TENDER_ID = "testTenderId";
-    public static final String TEST_BIDDER_ID = "testBidderId";
-    public static final String TEST_DESCRIPTION = "This is a great offer!";
-    public static final boolean IT_IS_BIDDABLE = true;
-    public static final boolean IT_IS_NO_BIDDABLE = false;
-    public static final String TEST_OFFER_ID = "testOfferId";
+    private static final String TEST_TENDER_ID = "testTenderId";
+    private static final String TEST_BIDDER_ID = "testBidderId";
+    private static final String TEST_DESCRIPTION = "This is a great offer!";
+    private static final boolean IT_IS_BIDDABLE = true;
+    private static final boolean IT_IS_NO_BIDDABLE = false;
+    private static final String TEST_OFFER_ID = "testOfferId";
 
 
     @MockBean
@@ -132,9 +131,9 @@ public class OfferServiceUnitTest {
         targetOffer.setStatus(OfferStatus.ACCEPTED);
         doReturn(Optional.of(targetOffer))
                 .when(offerRepository).findById(anyString());
-        assertThatThrownBy( () -> offerService.acceptOffer(TEST_OFFER_ID))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessage("Target offer must have status NEW!");
+        assertThatThrownBy(() -> offerService.acceptOffer(TEST_OFFER_ID))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Target offer must have status NEW!");
 
         verify(offerRepository, never()).save(any(Offer.class));
         verify(offerRepository, never()).saveAll(anyList());
@@ -147,7 +146,7 @@ public class OfferServiceUnitTest {
         targetOffer.setStatus(OfferStatus.ACCEPTED);
         doReturn(Optional.empty())
                 .when(offerRepository).findById(anyString());
-        assertThatThrownBy( () -> offerService.acceptOffer(TEST_OFFER_ID))
+        assertThatThrownBy(() -> offerService.acceptOffer(TEST_OFFER_ID))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("OfferId refers to non existing offer!");
 
@@ -156,13 +155,74 @@ public class OfferServiceUnitTest {
         verify(tenderService, never()).closeTender(anyString());
     }
 
+    @Test
+    public void findAllAndFilterByTenderIdAndBidderIdWillApplyFilterOnlyByTender() {
+        Offer existingOffer = existingOffer(TEST_OFFER_ID);
+        doReturn(singletonList(existingOffer))
+                .when(offerRepository).findByTenderId(anyString());
 
+        assertThat(offerService.findAllAndFilterByTenderIdAndBidderId(TEST_TENDER_ID, null))
+                .containsExactly(existingOffer);
+        assertThat(offerService.findAllAndFilterByTenderIdAndBidderId(TEST_TENDER_ID, ""))
+                .containsExactly(existingOffer);
+
+        verify(offerRepository, times(2)).findByTenderId(eq(TEST_TENDER_ID));
+        verify(offerRepository, never()).findByBidderId(anyString());
+        verify(offerRepository, never()).findByTenderIdAndBidderId(anyString(), anyString());
+    }
+
+    @Test
+    public void findAllAndFilterByTenderIdAndBidderIdWillApplyFilterOnlyByBidder() {
+        Offer existingOffer = existingOffer(TEST_OFFER_ID);
+        doReturn(singletonList(existingOffer))
+                .when(offerRepository).findByBidderId(anyString());
+
+        assertThat(offerService.findAllAndFilterByTenderIdAndBidderId(null, TEST_BIDDER_ID))
+                .containsExactly(existingOffer);
+        assertThat(offerService.findAllAndFilterByTenderIdAndBidderId("", TEST_BIDDER_ID))
+                .containsExactly(existingOffer);
+
+        verify(offerRepository, times(2)).findByBidderId(eq(TEST_BIDDER_ID));
+        verify(offerRepository, never()).findByTenderId(anyString());
+        verify(offerRepository, never()).findByTenderIdAndBidderId(anyString(), anyString());
+    }
+
+    @Test
+    public void findAllAndFilterByTenderIdAndBidderIdWillApplyFilterByTenderAndBidder() {
+        Offer existingOffer = existingOffer(TEST_OFFER_ID);
+        doReturn(singletonList(existingOffer))
+                .when(offerRepository).findByTenderIdAndBidderId(anyString(), anyString());
+
+        assertThat(offerService.findAllAndFilterByTenderIdAndBidderId(TEST_TENDER_ID, TEST_BIDDER_ID))
+                .containsExactly(existingOffer);
+
+        verify(offerRepository, times(1)).findByTenderIdAndBidderId(eq(TEST_TENDER_ID), eq(TEST_BIDDER_ID));
+        verify(offerRepository, never()).findByTenderId(anyString());
+        verify(offerRepository, never()).findByBidderId(anyString());
+    }
+
+    @Test
+    public void findAllAndFilterByTenderIdAndBidderIdWillReturnAllIfTherIsNoTenderOrBidder() {
+        Offer existingOffer = existingOffer(TEST_OFFER_ID);
+        doReturn(singletonList(existingOffer))
+                .when(offerRepository).findAll();
+
+        assertThat(offerService.findAllAndFilterByTenderIdAndBidderId("", ""))
+                .containsExactly(existingOffer);
+        assertThat(offerService.findAllAndFilterByTenderIdAndBidderId(null, null))
+                .containsExactly(existingOffer);
+
+        verify(offerRepository, times(2)).findAll();
+        verify(offerRepository, never()).findByTenderIdAndBidderId(anyString(), anyString());
+        verify(offerRepository, never()).findByTenderId(anyString());
+        verify(offerRepository, never()).findByBidderId(anyString());
+    }
 
     private Offer existingOffer(String offerId) {
         return Offer.builder()
                 .offerId(offerId)
                 .tenderId(TEST_TENDER_ID)
-                .description(offerId+ ":" +TEST_DESCRIPTION)
+                .description(offerId + ":" + TEST_DESCRIPTION)
                 .status(OfferStatus.NEW)
                 .build();
     }

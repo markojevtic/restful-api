@@ -16,11 +16,14 @@ public interface OfferService {
      */
     Offer createOffer(Offer offer);
 
-    List<Offer> findByTenderId(String tenderId);
-
-    List<Offer> findByBidderId(String bidderId);
-
-    List<Offer> findByTenderIdAndBidderId(String tenderId, String bidderId);
+    /**
+     * Find offers and filter them by given tenderId and bidderId if they are presented.
+     *
+     * @param tenderId - if it empty or null fill be ignored
+     * @param bidderId - if it empty or null fill be ignored
+     * @return list of offers that meets given criterion.
+     */
+    List<Offer> findAllAndFilterByTenderIdAndBidderId(String tenderId, String bidderId);
 
     /**
      * Accept offer for the offerId, and decline all other offer for the same tender. In case that offer
