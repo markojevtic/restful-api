@@ -9,6 +9,7 @@ import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 import static com.github.markojevtic.restfulapi.resource.converter.ConversionTypeDescriptors.TENDER_DTO_LIST_DESCRIPTOR;
@@ -27,22 +28,23 @@ public class TenderResource {
     @Autowired
     private ConversionService conversionService;
 
-    public static final ControllerLinkBuilder createLink() {
+    public static ControllerLinkBuilder createLink() {
         return linkTo(TenderResource.class);
     }
 
-    public static final ControllerLinkBuilder createLinkToQueryByIssuerId(String issuerId) {
+    public static ControllerLinkBuilder createLinkToQueryByIssuerId(String issuerId) {
         return linkTo(methodOn(TenderResource.class).getTenderByIssuer(issuerId));
     }
 
     @PostMapping
-    public ResponseEntity<TenderDto> createTender(@RequestBody TenderDto tenderDto) {
+    public ResponseEntity<TenderDto> createTender(@Valid @RequestBody TenderDto tenderDto) {
         Tender newTender = tenderService.createNewTender(conversionService.convert(tenderDto, Tender.class));
         return ResponseEntity.status(CREATED).body(
                 conversionService.convert(newTender, TenderDto.class)
         );
     }
 
+    @SuppressWarnings("unchecked")
     @GetMapping
     public ResponseEntity<List<TenderDto>> getTenderByIssuer(@RequestParam String issuerId) {
         return ResponseEntity.ok(

@@ -18,8 +18,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static java.util.Collections.singletonList;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -33,6 +33,7 @@ public class TenderResourceUnitTest {
     public static final String TEST_TENDER_ID = "test-tender-id";
     public static final String TEST_ISSUER_ID = "test-issuer-id";
     public static final String TEST_DESCRIPTION = "Test description";
+    public static final String OVERSIZED_ISSUER_ID = "01234567890123456789012345678901234567890123456789012345678901234567890123456789";
     private final ObjectMapper mapper = new ObjectMapper();
 
     @MockBean
@@ -79,6 +80,23 @@ public class TenderResourceUnitTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(mapper.writeValueAsString(newTenderDto)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void postReturnsBadRequestStatusAndMessageWhenInputOfferIsNotValid() throws Exception {
+        TenderDto newTenderDto = newTestTenderDto();
+        newTenderDto.setIssuerId(OVERSIZED_ISSUER_ID);
+
+        doThrow(new UnsupportedOperationException("It should not be thrown!"))
+                .when(tenderService).createNewTender(any(Tender.class));
+
+        mvc.perform(post(TenderResource.createLink().toUri())
+                .accept(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(mapper.writeValueAsString(newTenderDto)))
+                .andExpect(status().isBadRequest())
+                .andExpect((jsonPath("$.message", containsString("issuerId"))))
+                .andExpect((jsonPath("$.message", containsString("size must be between 0 and 36"))));
     }
 
     @Test

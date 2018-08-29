@@ -20,8 +20,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -36,6 +36,7 @@ public class OfferResourceUnitTest {
     public static final String TEST_TENDER_ID = "test-tender-id";
     public static final String TEST_BIDDER_ID = "test-issuer-id";
     public static final String TEST_DESCRIPTION = "Test description";
+    public static final String OVERSIZED_ID = "12356768901235676890123567689012356768901235676890";
     private final ObjectMapper mapper = new ObjectMapper();
 
     @MockBean
@@ -72,7 +73,7 @@ public class OfferResourceUnitTest {
     }
 
     @Test
-    public void postReturnsBadRequestStatusWhenServiceIllegalArgumentException() throws Exception {
+    public void postReturnsBadRequestStatusWhenServiceThrowsIllegalArgumentException() throws Exception {
         OfferDto newOfferDto = newTestOfferDto();
 
         doThrow(new IllegalArgumentException())
@@ -84,6 +85,24 @@ public class OfferResourceUnitTest {
                 .content(mapper.writeValueAsString(newOfferDto)))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    public void postReturnsBadRequestStatusAndMessageWhenInputOfferIsNotValid() throws Exception {
+        OfferDto newOfferDto = newTestOfferDto();
+        newOfferDto.setBidderId(OVERSIZED_ID);
+
+        doThrow(new UnsupportedOperationException("It should not be thrown!"))
+                .when(offerService).createOffer(any(Offer.class));
+
+        mvc.perform(post(OfferResource.createLink().toUri())
+                .accept(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(mapper.writeValueAsString(newOfferDto)))
+                .andExpect(status().isBadRequest())
+                .andExpect((jsonPath("$.message", containsString("bidderId"))))
+                .andExpect((jsonPath("$.message", containsString("size must be between 0 and 36"))));
+    }
+
 
     @Test
     public void getByTenderIdReturnsResultWithStatusOk() throws Exception {

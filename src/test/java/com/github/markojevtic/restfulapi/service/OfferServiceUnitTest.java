@@ -12,13 +12,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -104,7 +102,7 @@ public class OfferServiceUnitTest {
 
         doReturn(Optional.of(targetOffer))
                 .when(offerRepository).findById(anyString());
-        doReturn(Arrays.asList(anotherOffer))
+        doReturn(singletonList(anotherOffer))
                 .when(offerRepository).findByTenderId(anyString());
 
         offerService.acceptOffer(TEST_OFFER_ID);
