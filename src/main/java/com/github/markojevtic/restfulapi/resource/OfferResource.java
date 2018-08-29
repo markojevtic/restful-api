@@ -4,6 +4,10 @@ import com.github.markojevtic.restfulapi.repository.entity.Offer;
 import com.github.markojevtic.restfulapi.resource.dto.OfferDto;
 import com.github.markojevtic.restfulapi.resource.dto.TenderDto;
 import com.github.markojevtic.restfulapi.service.OfferService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
@@ -20,9 +24,9 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
-@SuppressWarnings("unchecked")
 @RestController
-@RequestMapping(value = "/offers", produces = APPLICATION_JSON_UTF8_VALUE, consumes = APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(value = "/offers", produces = APPLICATION_JSON_UTF8_VALUE)
+@Api(description = "API for creating, querying and accepting Offers.")
 public class OfferResource {
     @Autowired
     private OfferService offerService;
@@ -50,7 +54,13 @@ public class OfferResource {
         return linkTo(methodOn(OfferResource.class).getAllByTenderIdAndBidderId(tenderId, bidderId));
     }
 
-    @PostMapping
+    @ApiOperation("Handles creation of new offer in system. It does validation of input offer, initialization of read-only fields.")
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "Offer has been created successfully."),
+            @ApiResponse(code = 400, message = "Posted offer is not valid. Take a look into payload for the reason."),
+            @ApiResponse(code = 500, message = "An unexpected server error")
+    })
+    @PostMapping(consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<OfferDto> createOffer(@Valid @RequestBody OfferDto offerDto) {
         Offer newOffer = offerService.createOffer(conversionService.convert(offerDto, Offer.class));
         return ResponseEntity.status(CREATED).body(
@@ -58,7 +68,11 @@ public class OfferResource {
         );
     }
 
-    @SuppressWarnings("unchecked")
+    @ApiOperation(value = "Querying offers by tender-id.", nickname = "getAllByTenderId")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Successful, result is a list of offers for given tender-id."),
+            @ApiResponse(code = 500, message = "An unexpected server error")
+    })
     @GetMapping(params = "tenderId")
     public ResponseEntity<List<TenderDto>> getAllByTenderId(@RequestParam String tenderId) {
         return ResponseEntity.ok(
@@ -66,6 +80,11 @@ public class OfferResource {
         );
     }
 
+    @ApiOperation(value = "Querying offers by bidder-id.", nickname = "getAllByBidderId")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Successful, result is a list of offers for given bidder-id."),
+            @ApiResponse(code = 500, message = "An unexpected server error")
+    })
     @GetMapping(params = "bidderId")
     public ResponseEntity<List<TenderDto>> getAllByBidderId(@RequestParam String bidderId) {
         return ResponseEntity.ok(
@@ -73,7 +92,11 @@ public class OfferResource {
         );
     }
 
-    @SuppressWarnings("unchecked")
+    @ApiOperation(value = "Querying offers by tender-id and bidder-id.", nickname = "getAllByTenderIdAndBidderId")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Successful, result is a list of offers for given tender-id and bidder-id."),
+            @ApiResponse(code = 500, message = "An unexpected server error")
+    })
     @GetMapping(params = {"tenderId", "bidderId"})
     public ResponseEntity<List<TenderDto>> getAllByTenderIdAndBidderId(@RequestParam String tenderId, @RequestParam String bidderId) {
         return ResponseEntity.ok(
@@ -81,6 +104,12 @@ public class OfferResource {
         );
     }
 
+    @ApiOperation("Perform a accepting operation for the offer with given id. It accepts the offer, and decline all other offers for the same tender.")
+    @ApiResponses({
+            @ApiResponse(code = 204, message = "Offer has been accepted successfully."),
+            @ApiResponse(code = 400, message = "Posted offer could not be accepted. Take a look into payload for the reason."),
+            @ApiResponse(code = 500, message = "An unexpected server error")
+    })
     @PostMapping(path = "/{offerId}/accepted")
     public ResponseEntity<Void> acceptOffer(@PathVariable String offerId) {
         offerService.acceptOffer(offerId);
